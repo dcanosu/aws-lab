@@ -81,6 +81,9 @@ jobs:
         (needs.terraform-apply.result == 'success' || needs.terraform-plan.result == 'skipped')
       runs-on: ubuntu-latest
       steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v4
+          
         - name: 🚀 Trigger Ansible Workflow
           env:
             GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
