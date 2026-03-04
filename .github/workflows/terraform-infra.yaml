@@ -5,7 +5,8 @@ on:
     paths:
       - 'terraform/**'
       - 'terraform-policy.json'
-      - 'deploy.sh'
+      - 'deploy-github.sh'
+      - '.github/workflows/**'
 
 jobs:
   terraform:
@@ -19,14 +20,14 @@ jobs:
       - name: ⬇️ Checkout Repo
         uses: actions/checkout@v4
 
-      # - name: 🔐 Setup IAM Permissions
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   run: |
-      #     chmod +x deploy-github.sh
-      #     # Usamos el flag que definimos para aplicar la política de IAM
-      #     ./deploy-github.sh --setup-iam
+      - name: 🔐 Setup IAM Permissions
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          chmod +x deploy-github.sh
+          # Usamos el flag que definimos para aplicar la política de IAM
+          ./deploy-github.sh --setup-iam
 
       - name: 🏗️ Setup Terraform
         uses: hashicorp/setup-terraform@v3
