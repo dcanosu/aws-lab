@@ -39,8 +39,10 @@ jobs:
           AWS_REGION: "us-east-1"
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
+          PYTHON_PATH=$(which python3)
           ansible-playbook -i ansible/inventories/aws_ec2.yaml \
             ansible/site.yaml \
             -u ec2-user \
             --private-key ~/.ssh/id_rsa \
+            -e "ansible_python_interpreter=$PYTHON_PATH" \
             -e "asg_name=${{ secrets.ASG_NAME }}"
