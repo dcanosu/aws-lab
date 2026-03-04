@@ -1,0 +1,31 @@
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_iam_role_policy.ec2_asg_readonly will be created
+  + resource "aws_iam_role_policy" "ec2_asg_readonly" {
+      + id          = (known after apply)
+      + name        = "ec2_asg_readonly_permissions"
+      + name_prefix = (known after apply)
+      + policy      = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action   = [
+                          + "autoscaling:DescribeAutoScalingInstances",
+                          + "ec2:DescribeTags",
+                        ]
+                      + Effect   = "Allow"
+                      + Resource = "*"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + role        = "ec2_cloudwatch_agent_role"
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
