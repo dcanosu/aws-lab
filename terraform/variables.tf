@@ -27,6 +27,7 @@ variable "allowed_ssh_cidr" {
 
 variable "ami_id" {
   description = "Amazon Linux 2 AMI"
+  default = "ami-0f3caa1cf4417e51b"
 }
 
 variable "instance_type" {
