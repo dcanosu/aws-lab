@@ -22,7 +22,7 @@ variable "azs" {
 
 variable "allowed_ssh_cidr" {
   type    = list(string)
-  default = ["0.0.0.0/0"] //cambiar por la ip publica
+  default = ["0.0.0.0/0"]
  }
 
 variable "ami_id" {
