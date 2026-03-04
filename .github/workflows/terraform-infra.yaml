@@ -1,4 +1,4 @@
-name: 🏗️ Infra & SSH Key Sync
+name: Infra & SSH Key Sync
 
 on:
   push:
@@ -9,30 +9,39 @@ on:
       - '.github/workflows/**'
 
 jobs:
-  terraform:
+  terraform-plan:
     runs-on: ubuntu-latest
-    # Necesario para que GH CLI funcione correctamente
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Plan
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          cd terraform
+          terraform init
+          terraform plan -no-color
+    
+  terraform-apply:
+    runs-on: ubuntu-latest
+    needs: terraform-plan
+    environment: prod
     permissions:
       contents: read
       id-token: write
-
     steps:
-      - name: ⬇️ Checkout Repo
+      - name: Checkout Repo
         uses: actions/checkout@v4
 
-      # - name: 🔐 Setup IAM Permissions
-      #   env:
-      #     AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      #     AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      #   run: |
-      #     chmod +x deploy-github.sh
-      #     # Usamos el flag que definimos para aplicar la política de IAM
-      #     ./deploy-github.sh --setup-iam
-
-      - name: 🏗️ Setup Terraform
+      - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: 🚀 Terraform Init & Apply
+      - name: Terraform Init & Apply
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -44,16 +53,18 @@ jobs:
       - name: 🔑 Sync SSH Key & ASG Name to GitHub Secrets
         # Este paso extrae los datos de Terraform y los guarda en los Secretos de GitHub
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
         run: |
           cd terraform
-          
-          # 1. Sincronizar Llave SSH
+          terraform init -no-color
+
+
           PRIVATE_KEY=$(terraform output -raw ssh_private_key)
           gh secret set SSH_PRIVATE_KEY --body "$PRIVATE_KEY"
           
-          # 2. Sincronizar Nombre del ASG para Ansible
           ASG_NAME=$(terraform output -raw asg_name)
           gh secret set ASG_NAME --body "$ASG_NAME"
           
-          echo "✅ Secretos sincronizados correctamente en GitHub Actions."
+          echo "Secrets successfully synced to GitHub Actions."
