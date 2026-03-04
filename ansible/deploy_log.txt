@@ -1,0 +1,47 @@
+
+PLAY [Configure Server with Docker and CloudWatch] *****************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Install Docker (AL2023)] ****************************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Ensure Docker service is running] *******************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Add ec2-user to docker group] ***********************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Install Python and Docker dependencies via DNF] *****************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Create local directory for HTML] ********************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Deploy custom index.html] ***************************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Run Nginx container with custom volume] *************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [docker : Run Nginx container] ********************************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [Show Web App URL] ********************************************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com] => {
+    "msg": "Your app is live at http://ec2-184-73-4-228.compute-1.amazonaws.com"
+}
+
+TASK [🛰️ Install CloudWatch Agent] **********************************************
+ok: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [📝 Configure CloudWatch Agent JSON] **************************************
+changed: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+TASK [🚀 Start and Enable CloudWatch Agent] ************************************
+changed: [ec2-184-73-4-228.compute-1.amazonaws.com]
+
+PLAY RECAP *********************************************************************
+ec2-184-73-4-228.compute-1.amazonaws.com : ok=13   changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

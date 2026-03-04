@@ -1,0 +1,26 @@
+name: Deploy App Only
+on:
+  push:
+    paths:
+      - 'ansible/roles/docker/files/index.html'
+
+jobs:
+  update-html:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Run Ansible (App Tag)
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: |
+          ansible-playbook -i ansible/inventories/inventory_list.txt \
+            ansible/site.yaml \
+            --tags "update_web" \
+            -e "asg_name=${{ secrets.ASG_NAME }}"

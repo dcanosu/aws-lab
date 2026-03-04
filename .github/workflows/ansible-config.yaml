@@ -1,0 +1,44 @@
+name: 🛠️ Ansible Full Config
+
+on:
+  push:
+    paths:
+      - 'ansible/**'
+      - '!ansible/roles/docker/files/index.html'
+
+jobs:
+  ansible-full:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Set up SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Install Ansible & AWS Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto3 botocore
+          ansible-galaxy collection install amazon.aws
+
+      - name: Generate Dynamic Inventory & Run Playbook
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+          ANSIBLE_HOST_KEY_CHECKING: "False"
+        run: |
+          ansible-playbook -i ansible/inventories/aws_ec2.yaml \
+            ansible/site.yaml \
+            -u ec2-user \
+            --private-key ~/.ssh/id_rsa \
+            -e "asg_name=${{ secrets.ASG_NAME }}"

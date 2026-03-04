@@ -1,0 +1,17 @@
+plugin: amazon.aws.aws_ec2
+regions:
+  - us-east-1
+# profile: terraform
+
+filters:
+  tag:Name: "app-asg"
+  instance-state-name: [ 'running' ]
+
+keyed_groups:
+  - key: tags
+    prefix: tag
+
+hostnames:
+  - dns-name
+compose:
+  ansible_host: public_dns_name

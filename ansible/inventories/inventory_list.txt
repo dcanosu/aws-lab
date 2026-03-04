@@ -1,0 +1,12 @@
+@all:
+  |--@ungrouped:
+  |--@aws_ec2:
+  |  |--ec2-184-73-4-228.compute-1.amazonaws.com
+  |--@tag_aws_ec2launchtemplate_id_lt_0e8adb02a68a01b12:
+  |  |--ec2-184-73-4-228.compute-1.amazonaws.com
+  |--@tag_Name_app_asg:
+  |  |--ec2-184-73-4-228.compute-1.amazonaws.com
+  |--@tag_aws_autoscaling_groupName_terraform_20260304032729113800000003:
+  |  |--ec2-184-73-4-228.compute-1.amazonaws.com
+  |--@tag_aws_ec2launchtemplate_version_1:
+  |  |--ec2-184-73-4-228.compute-1.amazonaws.com

@@ -1,0 +1,43 @@
+- name: Server Configuration with Docker
+  hosts: all
+  become: yes
+  vars:
+    ansible_user: ec2-user
+    ansible_ssh_private_key_file: "terraform/modules/launch-template/app-key.pem"
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+
+  tasks:
+    - name: Install Docker (AL2023)
+      dnf:
+        name: docker
+        state: present
+
+    - name: Start Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ec2-user to docker group
+      user:
+        name: ec2-user
+        groups: docker
+        append: yes
+
+    - name: Install all Python and Docker dependencies via DNF
+      dnf:
+        name: 
+          - python3-pip
+          - python3-requests
+          - python3-urllib3
+          - python3-docker
+        state: present
+
+    - name: Run Nginx container
+      community.docker.docker_container:
+        name: web_app
+        image: nginx:latest
+        state: started
+        restart_policy: always
+        published_ports:
+          - "80:80"
