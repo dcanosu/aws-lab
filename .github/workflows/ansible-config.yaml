@@ -1,6 +1,7 @@
 name: 🛠️ Ansible Full Config
 
 on:
+  workflow_dispatch: 
   push:
     paths:
       - 'ansible/**'

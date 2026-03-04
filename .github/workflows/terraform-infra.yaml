@@ -68,3 +68,11 @@ jobs:
           gh secret set ASG_NAME --body "$ASG_NAME"
           
           echo "Secrets successfully synced to GitHub Actions."
+
+      - name: Wait for SSH to be ready
+        run: sleep 30
+      
+      - name: Trigger Ansible config
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
+        run: gh workflow run "ansible-config.yaml"
