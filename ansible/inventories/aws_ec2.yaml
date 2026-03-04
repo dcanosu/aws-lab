@@ -2,14 +2,17 @@ plugin: amazon.aws.aws_ec2
 regions:
   - us-east-1
 filters:
-  tag:Name: "app-asg"
-  instance-state-name: [ 'running' ]
+  tag:Name: 
+    - "app-asg"
+  instance-state-name:  
+    - "running"
 
 keyed_groups:
   - key: tags
     prefix: tag
 
 hostnames:
-  - dns-name
+  - public-ip-address
+  # - dns-name
 compose:
-  ansible_host: public_dns_name
+  ansible_host: public_ip_address
