@@ -37,9 +37,13 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-1"
-          ANSIBLE_PYTHON_INTERPRETER: /usr/bin/python3
         run: |
-          ansible-inventory -i ansible/inventories/aws_ec2.yaml --graph
+          # Obtenemos la ruta del python donde SI está boto3
+          PYTHON_PATH=$(which python3)
+          
+          # Forzamos a ansible-inventory a usar ese python para cargar el plugin
+          ansible-inventory -i ansible/inventories/aws_ec2.yaml --graph \
+            -e "ansible_python_interpreter=$PYTHON_PATH"
 
       - name: Generate Dynamic Inventory & Run Playbook
         env:
@@ -47,11 +51,17 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-1"
           ANSIBLE_HOST_KEY_CHECKING: "False"
-          ANSIBLE_PYTHON_INTERPRETER: /usr/bin/python3
         run: |
+          # 1. Aseguramos dependencias en esta sesión
+          python3 -m pip install boto3 botocore
+          
+          # 2. Guardamos la ruta del python bueno
+          PYTHON_PATH=$(which python3)
+          
+          # 3. Ejecutamos el playbook pasando el intérprete para que el INVENTARIO funcione
           ansible-playbook -i ansible/inventories/aws_ec2.yaml \
             ansible/site.yaml \
             -u ec2-user \
             --private-key ~/.ssh/id_rsa \
-            -e "ansible_python_interpreter=/usr/bin/python3" \
+            -e "ansible_python_interpreter=$PYTHON_PATH" \
             -e "asg_name=${{ secrets.ASG_NAME }}" -vv
