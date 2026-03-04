@@ -9,16 +9,11 @@ on:
 
 jobs:
   ansible-full:
+    if: always() && (needs.terraform-apply.result == 'success' || needs.terraform-apply.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
-
 
       - name: Set up SSH Key
         run: |
@@ -26,31 +21,10 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Install AWS Dependencies
+      - name: Inject AWS Tools into Ansible
         run: |
-          python3 -m pip install --upgrade pip
-          python3 -m pip install boto3 botocore
+          pipx inject ansible-core boto3 botocore --force
           ansible-galaxy collection install amazon.aws
-
-      - name: 🛠️ Force Boto3 into Ansible's environment
-        run: |
-          # Esto inyecta las librerías directamente en el core de Ansible
-          pipx inject ansible-core boto3 botocore
-          # También instalamos la colección necesaria
-          ansible-galaxy collection install amazon.aws
-
-      - name: 🔍 Debug Inventory
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-1"
-        run: |
-          # Obtenemos la ruta del python donde SI está boto3
-          PYTHON_PATH=$(which python3)
-          
-          # Forzamos a ansible-inventory a usar ese python para cargar el plugin
-          ansible-inventory -i ansible/inventories/aws_ec2.yaml --graph \
-            -e "ansible_python_interpreter=$PYTHON_PATH"
 
       - name: Generate Dynamic Inventory & Run Playbook
         env:
@@ -58,6 +32,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-1"
           ANSIBLE_HOST_KEY_CHECKING: "False"
+          ANSIBLE_DEPRECATION_WARNINGS: "False"
         run: |
           ansible-playbook -i ansible/inventories/aws_ec2.yaml \
             ansible/site.yaml \
