@@ -32,6 +32,13 @@ jobs:
           python3 -m pip install boto3 botocore
           ansible-galaxy collection install amazon.aws
 
+      - name: 🛠️ Force Boto3 into Ansible's environment
+        run: |
+          # Esto inyecta las librerías directamente en el core de Ansible
+          pipx inject ansible-core boto3 botocore
+          # También instalamos la colección necesaria
+          ansible-galaxy collection install amazon.aws
+
       - name: 🔍 Debug Inventory
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -52,16 +59,8 @@ jobs:
           AWS_REGION: "us-east-1"
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          # 1. Aseguramos dependencias en esta sesión
-          python3 -m pip install boto3 botocore
-          
-          # 2. Guardamos la ruta del python bueno
-          PYTHON_PATH=$(which python3)
-          
-          # 3. Ejecutamos el playbook pasando el intérprete para que el INVENTARIO funcione
           ansible-playbook -i ansible/inventories/aws_ec2.yaml \
             ansible/site.yaml \
             -u ec2-user \
             --private-key ~/.ssh/id_rsa \
-            -e "ansible_python_interpreter=$PYTHON_PATH" \
             -e "asg_name=${{ secrets.ASG_NAME }}" -vv
