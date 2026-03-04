@@ -10,6 +10,7 @@ filters:
 keyed_groups:
   - key: tags
     prefix: aws_tags
+    separator: "_"
 
 hostnames:
   # - public-ip-address
@@ -17,4 +18,4 @@ hostnames:
 compose:
   # ansible_host: public_ip_address
   ansible_hist: dns-name
-  ansible_python_interpreter: /usr/bin/python3
+  ansible_python_interpreter: /usr/bin/python3.9
