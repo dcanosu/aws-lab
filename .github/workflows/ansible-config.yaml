@@ -19,13 +19,14 @@ jobs:
         with:
           python-version: '3.x'
 
+
       - name: Set up SSH Key
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Install Ansible & AWS Dependencies
+      - name: Install AWS Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install boto3 botocore
@@ -40,6 +41,7 @@ jobs:
         run: |
           ansible-playbook -i ansible/inventories/aws_ec2.yaml \
             ansible/site.yaml \
+            --tags "update_web" \
             -u ec2-user \
             --private-key ~/.ssh/id_rsa \
             -e "asg_name=${{ secrets.ASG_NAME }}"

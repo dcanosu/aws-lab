@@ -9,6 +9,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+
+      - name: Install AWS Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install boto3 botocore
+          ansible-galaxy collection install amazon.aws
       
       - name: Configure SSH Key
         run: |
@@ -16,11 +27,16 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-      - name: Run Ansible (App Tag)
+      - name: Run Ansible (Updating)
         env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
           ANSIBLE_HOST_KEY_CHECKING: "False"
         run: |
-          ansible-playbook -i ansible/inventories/inventory_list.txt \
+          ansible-playbook -i ansible/inventories/aws_ec2.yaml \
             ansible/site.yaml \
             --tags "update_web" \
+            -u ec2-user \
+            --private-key ~/.ssh/id_rsa \
             -e "asg_name=${{ secrets.ASG_NAME }}"

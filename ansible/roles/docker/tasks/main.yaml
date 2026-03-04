@@ -36,6 +36,7 @@
   copy:
     src: index.html
     dest: /home/ec2-user/html/index.html
+  tags: [update_web]
 
 - name: Run Nginx container with custom volume
   community.docker.docker_container:
