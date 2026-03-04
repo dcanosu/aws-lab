@@ -32,6 +32,15 @@ jobs:
           python3 -m pip install boto3 botocore
           ansible-galaxy collection install amazon.aws
 
+      - name: 🔍 Debug Inventory
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+          ANSIBLE_PYTHON_INTERPRETER: /usr/bin/python3
+        run: |
+          ansible-inventory -i ansible/inventories/aws_ec2.yaml --graph
+
       - name: Generate Dynamic Inventory & Run Playbook
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
