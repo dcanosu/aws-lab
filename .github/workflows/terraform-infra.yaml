@@ -75,4 +75,4 @@ jobs:
       - name: Trigger Ansible config
         env:
           GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
-        run: gh workflow run "ansible-config.yaml"
+        run: gh workflow run "Ansible Full Config"
