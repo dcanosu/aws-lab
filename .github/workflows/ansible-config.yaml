@@ -9,7 +9,6 @@ on:
 
 jobs:
   ansible-full:
-    if: always() && (needs.terraform-apply.result == 'success' || needs.terraform-apply.result == 'skipped')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repo
