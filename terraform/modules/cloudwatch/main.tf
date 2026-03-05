@@ -35,7 +35,7 @@ resource "aws_cloudwatch_dashboard" "main" {
           metrics = [
             [ "CWAgent", "mem_used_percent", "AutoScalingGroupName", "${var.asg_name}" ] 
           ]
-          period = 60, stat = "Average", region = "us-east-1", title = "RAM (%)", yAxis = { left = { min = 0, max = 100 } }
+          view = "timeSeries", stacked = false, period = 60, stat = "Average", region = "us-east-1", title = "RAM (%)", yAxis = { left = { min = 0, max = 100, label = "Percent" } }
         }
       },
       # Widget 2: CPU
