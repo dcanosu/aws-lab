@@ -2,10 +2,6 @@ name: Ansible Full Config
 
 on:
   workflow_dispatch: 
-  push:
-    paths:
-      - 'ansible/**'
-      - '!ansible/roles/docker/files/index.html'
 
 jobs:
   ansible-full:
