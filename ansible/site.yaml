@@ -49,14 +49,13 @@
             },
             "logs": {
               "logs_collected": {
-                "files": { "collect_list": [] },
-                "windows_events": { "collect_list": [] },
                 "journal": {
                   "collect_list": [
                     {
                       "journal_name": "system",
                       "log_group_name": "System_Journal",
-                      "log_stream_name": "{instance_id}"
+                      "log_stream_name": "{instance_id}",
+                      "retention_in_days": 7
                     }
                   ]
                 }
