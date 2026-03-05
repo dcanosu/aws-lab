@@ -19,7 +19,9 @@
     - name: Ensure CloudWatch Agent user exists
       user:
         name: cwagent
-        group: cwagent
+        groups:
+          - cwagent
+          - systemd-journal
         shell: /sbin/nologin
         system: yes
 
@@ -35,17 +37,6 @@
         - /opt/aws/amazon-cloudwatch-agent/logs
         - /opt/aws/amazon-cloudwatch-agent/var
 
-    - name: Allow cwagent to read system logs
-      acl:
-        path: "{{ item }}"
-        entity: cwagent
-        etype: user
-        permissions: r
-        state: present
-      with_items:
-        - /var/log/messages
-        - /var/log/secure
-
     - name: Configure CloudWatch Agent JSON
       copy:
         dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
@@ -57,25 +48,20 @@
               "omit_hostname": true
             },
             "logs": {
-            "logs_collected": {
-              "files": {
-                "collect_list": [
-                  {
-                    "file_path": "/var/log/messages",
-                    "log_group_name": "System_Logs",
-                    "log_stream_name": "{instance_id}",
-                    "retention_in_days": 7
-                  },
-                  {
-                    "file_path": "/var/log/secure",
-                    "log_group_name": "Auth_Logs",
-                    "log_stream_name": "{instance_id}",
-                    "retention_in_days": 7
-                  }
-                ]
+              "logs_collected": {
+                "files": { "collect_list": [] },
+                "windows_events": { "collect_list": [] },
+                "journal": {
+                  "collect_list": [
+                    {
+                      "journal_name": "system",
+                      "log_group_name": "System_Journal",
+                      "log_stream_name": "{instance_id}"
+                    }
+                  ]
+                }
               }
-            }
-          },
+            },
             "metrics": {
               "append_dimensions": {
                 "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
@@ -100,7 +86,7 @@
     - name: Ensure service is running and enabled
       systemd:
         name: amazon-cloudwatch-agent
-        state: started
+        state: restarted
         enabled: yes
 
     - name: Retrieve GitHub Token from Secrets Manager
