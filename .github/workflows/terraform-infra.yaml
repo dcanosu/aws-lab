@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - 'terraform/**'
+      - '**.tf'
       - 'terraform-policy.json'
       - 'deploy-github.sh'
       - '.github/workflows/**'
