@@ -25,6 +25,28 @@
         shell: /sbin/nologin
         system: yes
 
+    - name: Create empty log files for CloudWatch
+      file:
+        path: "{{ item }}"
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+      with_items:
+        - /var/log/messages
+        - /var/log/secure
+
+    - name: Allow cwagent to read logs
+      acl:
+        path: "{{ item }}"
+        entity: cwagent
+        etype: user
+        permissions: r
+        state: present
+      with_items:
+        - /var/log/messages
+        - /var/log/secure
+
     - name: Set permissions for CloudWatch Agent directories
       file:
         path: "{{ item }}"
@@ -44,18 +66,21 @@
           {
             "agent": {
               "metrics_collection_interval": 60,
-              "run_as_user": "cwagent",
-              "omit_hostname": true
+              "run_as_user": "cwagent"
             },
             "logs": {
               "logs_collected": {
-                "journal": {
+                "files": {
                   "collect_list": [
                     {
-                      "journal_name": "system",
-                      "log_group_name": "System_Journal",
-                      "log_stream_name": "{instance_id}",
-                      "retention_in_days": 7
+                      "file_path": "/var/log/messages",
+                      "log_group_name": "System_Logs",
+                      "log_stream_name": "{instance_id}"
+                    },
+                    {
+                      "file_path": "/var/log/secure",
+                      "log_group_name": "Auth_Logs",
+                      "log_stream_name": "{instance_id}"
                     }
                   ]
                 }
@@ -65,7 +90,6 @@
               "append_dimensions": {
                 "AutoScalingGroupName": "${aws:AutoScalingGroupName}"
               },
-              "aggregation_dimensions": [["AutoScalingGroupName"]],
               "metrics_collected": {
                 "mem": {
                   "measurement": ["mem_used_percent"],
