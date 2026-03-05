@@ -53,7 +53,7 @@ jobs:
           terraform init
           terraform apply -auto-approve
 
-      - name: 🔑 Sync SSH Key & ASG Name to GitHub Secrets
+      - name: Sync SSH Key & ASG Name to GitHub Secrets
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -83,8 +83,8 @@ jobs:
       steps:
         - name: Checkout Repo
           uses: actions/checkout@v4
-          
-        - name: 🚀 Trigger Ansible Workflow
+
+        - name: Trigger Ansible Workflow
           env:
             GH_TOKEN: ${{ secrets.GH_PAT_TOKEN }}
           run: |

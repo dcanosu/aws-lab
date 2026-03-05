@@ -18,4 +18,3 @@ hostnames:
 compose:
   # ansible_host: public_ip_address
   ansible_hist: dns-name
-  ansible_python_interpreter: /usr/bin/python3.9
