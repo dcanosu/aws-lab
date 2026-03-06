@@ -33,10 +33,10 @@ jobs:
           secret-ids: |
             SONAR_TOKEN, aws-lab/sonar-token
             GITHUB_TOKEN, aws-lab/scm-access
-          parse-json-secrets: false
+          parse-json-secrets: true
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
