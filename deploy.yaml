@@ -36,7 +36,7 @@
     - name: Run Nginx container
       community.docker.docker_container:
         name: web_app
-        image: nginx:latest
+        image: nginx:1.27
         state: started
         restart_policy: always
         published_ports:
