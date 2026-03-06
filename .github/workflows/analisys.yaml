@@ -35,14 +35,8 @@ jobs:
             GH_VAR, aws-lab/scm-access
           parse-json-secrets: true
 
-      - name: 🔍 Debug Variable Names
-        run: |
-          echo "--- Nombres de variables detectadas ---"
-          env | grep -E "SONAR_VAR|GH_VAR" | cut -d'=' -f1
-        shell: bash
-
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
-          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN || env.SONAR_VAR }}
-          GITHUB_TOKEN: ${{ env.GH_VAR_GH_TOKEN || secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ env.GH_VAR_GIT_TOKEN }}
