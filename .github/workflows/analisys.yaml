@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
+    
 
 permissions:
   contents: read
@@ -31,12 +33,12 @@ jobs:
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
-            SONAR_TOKEN, aws-lab/sonar-token
-            GH_TOKEN, aws-lab/scm-access
+            SONAR_VAR, aws-lab/sonar-token
+            GH_VAR, aws-lab/scm-access
           parse-json-secrets: true
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
-          GITHUB_TOKEN: ${{ env.GH_TOKEN }} 
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ env.GH_VAR_GIT_TOKEN }}
