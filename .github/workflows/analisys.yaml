@@ -21,25 +21,22 @@ jobs:
           fetch-depth: 0
 
       - name: Configure AWS Credentials
-        uses: Sonarqube/sonarqube-scan-action@v5.0.0
-        env:
-          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ env.GH_VAR_GH_TOKEN }}
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Get Secrets from AWS
+      - name: Get Sonar Token from AWS
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
             SONAR_TOKEN, aws-lab/sonar-token
-            GH_TOKEN, aws-lab/scm-access
-          parse-json-secrets: true
+            GITHUB_TOKEN, aws-lab/scm-access
+          parse-json-secrets: false
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@master
+        uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
-          GITHUB_TOKEN: ${{ env.GH_TOKEN }} 
           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
