@@ -21,7 +21,10 @@ jobs:
           fetch-depth: 0
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: Sonarqube/sonarqube-scan-action@v5.0.0
+        env:
+          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ env.GH_VAR_GH_TOKEN }}
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
