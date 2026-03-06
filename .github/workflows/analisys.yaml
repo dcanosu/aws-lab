@@ -27,21 +27,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
-      - name: Get Sonar Token from AWS
-        uses: aws-actions/aws-secretsmanager-get-secrets@v2
-        with:
-          secret-ids: |
-            SONAR_TOKEN, aws-lab/sonar-token
-            GITHUB_TOKEN, aws-lab/scm-access
-          parse-json-secrets: true
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
-        env:
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ env.GITHUB_TOKEN }}
-
-      - name: Get Sonar Token from AWS
+      - name: Get Secrets from AWS
         uses: aws-actions/aws-secretsmanager-get-secrets@v2
         with:
           secret-ids: |
@@ -50,16 +36,13 @@ jobs:
           parse-json-secrets: true
 
       - name: 🔍 Debug Variable Names
-        # Este comando listará todas las variables que empiezan por SONAR o GH
-        # No mostrará los valores (GitHub los protege con ***), pero sí los NOMBRES
         run: |
-          echo "Buscando nombres de variables inyectadas por AWS:"
+          echo "--- Nombres de variables detectadas ---"
           env | grep -E "SONAR_VAR|GH_VAR" | cut -d'=' -f1
         shell: bash
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
-          # Si el debug de arriba dice 'SONAR_VAR_SONAR_TOKEN', úsala así:
-          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ env.GH_VAR_GH_TOKEN }}
+          SONAR_TOKEN: ${{ env.SONAR_VAR_SONAR_TOKEN || env.SONAR_VAR }}
+          GITHUB_TOKEN: ${{ env.GH_VAR_GH_TOKEN || secrets.GITHUB_TOKEN }}
