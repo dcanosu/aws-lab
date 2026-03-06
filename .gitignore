@@ -25,6 +25,14 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+*.tfstate
+*.tfstate.backup
+.terraform/
+*.tfplan
+terraform.tfvars
+tfplan*
+*tfplan*
+.terraform.tfstate.lock.info
 
 # Plan files
 *.tfplan

@@ -2,6 +2,8 @@ name: Infra & SSH Key Sync
 
 on:
   push:
+    branches:
+      - main
     paths:
       - 'terraform/**'
       - '**.tf'
@@ -9,6 +11,7 @@ on:
       - 'deploy-github.sh'
       - '.github/workflows/**'
       - 'ansible/roles/docker/files/index.html'
+  workflow_dispatch:
 
 jobs:
   terraform-plan:
@@ -32,7 +35,7 @@ jobs:
     
   terraform-apply:
     needs: terraform-plan
-    if: needs.terraform-plan.result == 'success'
+    if: github.ref == 'refs/heads/main' && needs.terraform-plan.result == 'success'
     runs-on: ubuntu-latest
     environment: prod
     permissions:
@@ -77,9 +80,7 @@ jobs:
       
   trigger-ansible:
       needs: [terraform-plan, terraform-apply]
-      if: |
-        always() && 
-        (needs.terraform-apply.result == 'success' || needs.terraform-plan.result == 'skipped')
+      if: github.ref == 'refs/heads/main' && needs.terraform-apply.result == 'success'
       runs-on: ubuntu-latest
       steps:
         - name: Checkout Repo

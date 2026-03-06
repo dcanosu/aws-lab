@@ -52,12 +52,14 @@
       "Action": [
         "cloudwatch:PutMetricAlarm", "cloudwatch:DeleteAlarms", "cloudwatch:DescribeAlarms", "cloudwatch:ListTagsForResource",
         "cloudwatch:PutDashboard", "cloudwatch:ListMetrics", "cloudwatch:GetMetricData", "cloudwatch:DeleteDashboards", "cloudwatch:GetDashboard",
-        "autoscaling:*",
-        "elasticloadbalancing:*"
+        "autoscaling:CreateAutoScalingGroup", "autoscaling:UpdateAutoScalingGroup", "autoscaling:DeleteAutoScalingGroup", "autoscaling:Describe*",
+        "elasticloadbalancing:CreateLoadBalancer", "elasticloadbalancing:DeleteLoadBalancer", "elasticloadbalancing:Describe*", "elasticloadbalancing:CreateTargetGroup",
+        "elasticloadbalancing:DeleteTargetGroup", "elasticloadbalancing:RegisterTargets"
       ],
       "Resource": "*"
     },
     {
+    "Sid": "SpecificRolePolicyManagement",
     "Effect": "Allow",
     "Action": [
         "iam:PutRolePolicy",
@@ -65,6 +67,18 @@
         "iam:DeleteRolePolicy"
     ],
     "Resource": "arn:aws:iam::019682854978:role/ec2_cloudwatch_agent_role"
+    },
+    {
+      "Sid": "SecretsManagerAccess",
+      "Effect": "Allow",
+      "Action": [
+        "secretsmanager:GetSecretValue",
+        "secretsmanager:DescribeSecret"
+      ],
+      "Resource": [
+        "arn:aws:secretsmanager:us-east-1:019682854978:secret:aws-lab/sonar-token-*",
+        "arn:aws:secretsmanager:us-east-1:019682854978:secret:aws-lab/scm-access-*"
+      ]
     }
   ]
 }
